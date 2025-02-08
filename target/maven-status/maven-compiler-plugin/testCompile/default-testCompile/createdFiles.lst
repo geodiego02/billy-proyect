@@ -1,0 +1,4 @@
+com\billy\files\controller\FileControllerTest.class
+com\billy\files\BillyProyectApplicationTests.class
+com\billy\files\service\FileSplitServiceTest.class
+com\billy\files\service\MailServiceTest.class
