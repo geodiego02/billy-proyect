@@ -1,6 +1,0 @@
-com\billy\files\service\FileSplitService.class
-com\billy\files\controller\FileController.class
-com\billy\files\service\MailService.class
-com\billy\files\config\WebSocketConfig.class
-com\billy\files\BillyProyectApplication.class
-com\billy\files\controller\WebController.class

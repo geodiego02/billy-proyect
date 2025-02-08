@@ -44,6 +44,15 @@ public class FileController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("segmentSizeKB") int segmentSizeKB,
             @RequestParam("sessionId") String sessionId) {
+    	
+    	if (segmentSizeKB < 16 || segmentSizeKB > 1_048_576) {
+    	    return "Error: El tamaño del segmento debe estar entre 16 KB y 1 GB.";
+    	}
+
+    	if (segmentSizeKB == 0) {
+    	    return "Error: El tamaño de segmento no puede ser 0.";
+    	}
+
 
         try {
             File tempDir = new File(System.getProperty("java.io.tmpdir"), "splitFiles");
@@ -96,18 +105,25 @@ public class FileController {
     public String sendSegmentsByEmail(@RequestParam("toEmail") String toEmail,
                                       @RequestParam("segmentNames") List<String> segmentNames) {
     	
-    	// 1. Filtrar valores vacíos o nulos
+    	// Validar email
+    	String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+    	if (!toEmail.matches(emailRegex)) {
+    	    return "Error: Email inválido.";
+    	}
+
+    	
+    	// Filtrar valores vacíos o nulos
         List<String> filteredSegments = segmentNames.stream()
                 .filter(s -> s != null && !s.trim().isEmpty())
                 .collect(Collectors.toList());
 
-        // 2. Verificar si queda alguno
+        // Verificar si queda alguno
         if (filteredSegments.isEmpty()) {
             return "No hay segmentos válidos para enviar.";
         }
     	
         try {
-            mailService.sendSegmentsByEmail(toEmail, segmentNames);
+            mailService.sendSegmentsByEmail(toEmail, filteredSegments);
             return "Segmentos enviados con éxito a " + toEmail;
         } catch (Exception e) {
             e.printStackTrace();
