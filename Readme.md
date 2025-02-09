@@ -15,7 +15,7 @@ Este proyecto consiste en una aplicación web en **Java 17** con **Spring Boot**
 
 ## Instalación y Ejecución
 1. Clona este repositorio:
-   git clone https://github.com/usuario/billy-proyect.git
+   git clone https://github.com/geodiego02/billy-proyect.git
    cd billy-proyect
 2. Crear una imagen de docker:
    docker build -t billy-proyect .
