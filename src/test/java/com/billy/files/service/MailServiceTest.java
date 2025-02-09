@@ -1,5 +1,6 @@
 package com.billy.files.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,18 +31,17 @@ public class MailServiceTest {
 
     @Test
     void testSendSegmentsByEmail() throws MessagingException {
-        // Preparar Mock
+        // Preparar mock para MimeMessage
         MimeMessage mimeMessage = org.mockito.Mockito.mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
 
-        // Llamar al método
-        mailService.sendSegmentsByEmail("destino@ejemplo.com",
+        // Llamar al método y capturar el valor retornado
+        String result = mailService.sendSegmentsByEmail("destino@ejemplo.com",
                 Arrays.asList("Form.pdf.0", "Form.pdf.1"));
 
-        // Verificar que se invoca mailSender.send(mimeMessage)
+        // Verificar que se invoque mailSender.send(mimeMessage)
         verify(mailSender).send(mimeMessage);
+        // Verificar el mensaje retornado
+        assertEquals("Segmentos enviados con éxito a destino@ejemplo.com", result);
     }
-    
-    // Podrías hacer verificaciones más completas,
-    // p.e. capturar el MimeMessageHelper y chequear los attach, etc.
 }

@@ -2,5 +2,7 @@ C:\springboot\billy-proyect\src\main\java\com\billy\files\BillyProyectApplicatio
 C:\springboot\billy-proyect\src\main\java\com\billy\files\config\WebSocketConfig.java
 C:\springboot\billy-proyect\src\main\java\com\billy\files\controller\FileController.java
 C:\springboot\billy-proyect\src\main\java\com\billy\files\controller\WebController.java
+C:\springboot\billy-proyect\src\main\java\com\billy\files\exception\ErrorResponse.java
+C:\springboot\billy-proyect\src\main\java\com\billy\files\exception\GlobalExceptionHandler.java
 C:\springboot\billy-proyect\src\main\java\com\billy\files\service\FileSplitService.java
 C:\springboot\billy-proyect\src\main\java\com\billy\files\service\MailService.java

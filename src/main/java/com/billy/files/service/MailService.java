@@ -15,15 +15,24 @@ import jakarta.mail.internet.MimeMessage;
 @Service
 public class MailService {
 
-	@Autowired
-    private JavaMailSender mailSender;
+	private final JavaMailSender mailSender;
 
-    public void sendSegmentsByEmail(String toEmail, List<String> segmentNames) throws MessagingException {
+    public MailService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
+    public String sendSegmentsByEmail(String toEmail, List<String> segmentNames) throws MessagingException {
+
+    	// Filtrar valores vacíos o nulos
+        segmentNames.removeIf(s -> s == null || s.trim().isEmpty());
+        
+        // Verificar si queda alguno
+        if (segmentNames.isEmpty()) {
+            return "No hay segmentos válidos para enviar.";
+        }
         // Creamos un mensaje con adjuntos
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-
         helper.setTo(toEmail);
         helper.setSubject("Segmentos de archivo");
         helper.setText("Adjuntos los segmentos solicitados.");
@@ -37,7 +46,7 @@ public class MailService {
                 helper.addAttachment(segmentFile.getName(), fileResource);
             }
         }
-
         mailSender.send(mimeMessage);
+        return "Segmentos enviados con éxito a " + toEmail;
     }
 }

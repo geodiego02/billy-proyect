@@ -25,6 +25,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.billy.files.exception.GlobalExceptionHandler;
 import com.billy.files.service.FileSplitService;
 import com.billy.files.service.MailService;
 
@@ -44,7 +45,10 @@ public class FileControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(fileController).build();
+        // Agregamos el ControllerAdvice para que el manejo de excepciones global esté activo
+        mockMvc = MockMvcBuilders.standaloneSetup(fileController)
+                    .setControllerAdvice(new GlobalExceptionHandler())
+                    .build();
     }
 
     @Test
@@ -61,25 +65,22 @@ public class FileControllerTest {
         doNothing().when(fileSplitService)
         .splitFile(ArgumentMatchers.<File>any(), anyString(), anyInt(), anyString());
 
-
+        // IMPORTANTE: Se usa un segmentSizeKB válido (>= 16)
         mockMvc.perform(
                 multipart("/upload")
                     .file(mockFile)
-                    .param("segmentSizeKB", "10")
+                    .param("segmentSizeKB", "16")
                     .param("sessionId", "abc123")
         )
         .andExpect(status().isOk());
     }
 
-
-
     @Test
     void testUpload_NoFile() throws Exception {
-        // No usamos "file()" en el multipart, por lo que no adjuntamos nada
-        
+        // No se adjunta ningún archivo
         mockMvc.perform(
                 multipart("/upload")
-                    .param("segmentSizeKB", "10")
+                    .param("segmentSizeKB", "16")
                     .param("sessionId", "abc123")
         )
         .andExpect(status().isBadRequest());
@@ -87,8 +88,9 @@ public class FileControllerTest {
 
     @Test
     void testSendEmail_Success() throws Exception {
-        // Emular que el mailService no lanza excepción
-        doNothing().when(mailService).sendSegmentsByEmail(anyString(), anyList());
+        // Simular que el mailService retorna el mensaje de éxito.
+        when(mailService.sendSegmentsByEmail(anyString(), anyList()))
+                .thenReturn("Segmentos enviados con éxito a destino@ejemplo.com");
 
         mockMvc.perform(
                 post("/sendEmail")
@@ -100,5 +102,4 @@ public class FileControllerTest {
         )
         .andExpect(status().isOk());
     }
-
 }

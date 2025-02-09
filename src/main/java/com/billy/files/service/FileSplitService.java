@@ -17,18 +17,21 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileSplitService {
 
-	@Autowired
-    private SimpMessagingTemplate messagingTemplate;
+	private final SimpMessagingTemplate messagingTemplate;
+
+    public FileSplitService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
 	@Async
     public void splitFile(File localFile, String originalFilename, int segmentSizeKB, String sessionId) throws IOException {
 		
-		// 1) Elimina los segmentos viejos del mismo archivo
+		// Elimina los segmentos viejos del mismo archivo
 	    File tempDir = localFile.getParentFile();
 	    File[] oldFiles = tempDir.listFiles();
 	    if (oldFiles != null) {
 	        for (File f : oldFiles) {
-	            // Si coinciden con "ojoDerecho.pdf." (ejemplo) se borran
+	            // Si coinciden con ojoDerecho.pdf. por ejemplo se borran
 	            if (f.getName().startsWith(originalFilename + ".")) {
 	                f.delete();
 	            }
@@ -42,25 +45,20 @@ public class FileSplitService {
         try (FileChannel inChannel = FileChannel.open(localFile.toPath())) {
             long position = 0;
             int partNumber = 0;
-
             ByteBuffer buffer = ByteBuffer.allocate(8 * 1024); // 8KB buffer
 
             while (position < totalBytes) {
             	String partName = originalFilename + "." + partNumber;
-                tempDir = localFile.getParentFile();
                 File outFile = new File(tempDir, partName);
-
                 try (FileOutputStream fos = new FileOutputStream(outFile);
                      FileChannel outChannel = fos.getChannel()) {
-
                     long bytesToRead = segmentSize;
                     while (bytesToRead > 0) {
                         int bytesRead = inChannel.read(buffer);
-                        if (bytesRead == -1) break; // EOF
+                        if (bytesRead == -1) break; 
                         buffer.flip();
                         outChannel.write(buffer);
                         buffer.clear();
-
                         position += bytesRead;
                         bytesToRead -= bytesRead;
 
@@ -77,8 +75,40 @@ public class FileSplitService {
                 localFile.delete();
             }
         }
-
         // Al terminar, notifica
         messagingTemplate.convertAndSend("/topic/progress/" + sessionId, "DONE");
+    }
+	
+	public List<String> listSegments(String originalName) {
+        File tempDir = new File(System.getProperty("java.io.tmpdir"), "splitFiles");
+        File[] files = tempDir.listFiles();
+        List<String> segmentNames = new ArrayList<>();
+        if (files != null) {
+            for (File f : files) {
+                if (f.getName().startsWith(originalName + ".")) {
+                    segmentNames.add(f.getName());
+                }
+            }
+        }
+
+        // Ordenar por la parte numérica tras el último punto.
+        segmentNames.sort((a, b) -> {
+            int numA = extractNumericPart(a);
+            int numB = extractNumericPart(b);
+            return Integer.compare(numA, numB);
+        });
+        return segmentNames;
+    }
+	
+	private int extractNumericPart(String fileName) {
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot == -1) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(fileName.substring(lastDot + 1));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 }
