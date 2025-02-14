@@ -1,0 +1,69 @@
+/* Hace que html y body ocupen el 100% de la altura */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* Evita scroll horizontal no deseado */
+    overflow-x: hidden;
+}
+
+/* Convierte el body en un contenedor flex */
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Un contenedor principal que se expanda (flex:1) */
+main {
+    flex: 1 0 auto;
+}
+
+/* El footer se ubica al final sin "flotar" a media pantalla */
+footer {
+    flex-shrink: 0;
+}
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+    header {
+        background-color: #0078d4;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    nav ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    nav ul li {
+        display: inline;
+        margin-right: 20px;
+    }
+    nav ul li a {
+        color: white;
+        text-decoration: none;
+    }
+    main {
+        padding: 20px;
+        background: white;
+        margin: 20px auto;
+        width: 80%;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    table, th, td {
+        border: 1px solid #ddd;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+    

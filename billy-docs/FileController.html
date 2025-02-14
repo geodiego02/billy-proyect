@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FileController</title>
+  <!-- Bootstrap 5 CSS desde CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+  <!-- Tu hoja de estilos personalizada -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">Billy Docs</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#docNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="docNav">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="index.html">Inicio</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="BillyProyectApplication.html">Aplicación Principal</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="WebSocketConfig.html">Configuración WebSocket</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="GlobalExceptionHandler.html">Manejo de Excepciones</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="FileSplitService.html">Servicio de Segmentación</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="MailService.html">Servicio de Correo</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="InputSanitizationService.html">Servicio Validación</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="FileController.html">Controlador de Archivos</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="WebController.html">Controlador de Vistas</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container mb-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-secondary text-white">
+        <h2 class="mb-0">FileController</h2>
+      </div>
+      <div class="card-body">
+        <p>Controlador encargado de gestionar la subida, segmentación, descarga y envío de archivos.</p>
+        
+        <h3>Métodos</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Método</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>uploadAndSplit(...)</code></td>
+              <td>Recibe un archivo y lo divide en segmentos de tamaño especificado.</td>
+            </tr>
+            <tr>
+              <td><code>downloadSegment(...)</code></td>
+              <td>Permite descargar un segmento de archivo previamente generado.</td>
+            </tr>
+            <tr>
+              <td><code>sendSegmentsByEmail(...)</code></td>
+              <td>Envía los segmentos de un archivo por correo electrónico.</td>
+            </tr>
+            <tr>
+              <td><code>listSegments(...)</code></td>
+              <td>Lista los segmentos generados para un archivo en específico.</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h3>Detalles de los Métodos</h3>
+        
+        <h4><code>uploadAndSplit(MultipartFile file, int segmentSizeKB, String sessionId)</code></h4>
+        <p>
+          Recibe un archivo y lo divide en partes más pequeñas según el tamaño especificado. Realiza validaciones del tamaño del segmento y del archivo, guarda una copia temporal y llama a <code>FileSplitService.splitFile</code> para realizar la segmentación.
+        </p>
+        <ul>
+          <li>Valida que el tamaño del segmento esté entre 16 KB y 1 GB.</li>
+          <li>Verifica que el archivo no exceda el tamaño máximo permitido.</li>
+          <li>Guarda el archivo en una carpeta temporal y lo sanitiza.</li>
+          <li>Llama a <code>FileSplitService.splitFile</code> para dividir el archivo.</li>
+          <li>Devuelve un mensaje confirmando que la segmentación ha sido iniciada.</li>
+        </ul>
+        
+        <h4><code>downloadSegment(String filename)</code></h4>
+        <p>
+          Permite descargar un segmento de archivo previamente segmentado. Busca el archivo en la carpeta temporal y, si existe, lo retorna como recurso descargable.
+        </p>
+        <ul>
+          <li>Si el archivo no se encuentra, retorna un error 404.</li>
+        </ul>
+        
+        <h4><code>sendSegmentsByEmail(String toEmail, List&lt;String&gt; segmentNames)</code></h4>
+        <p>
+          Envía los segmentos generados de un archivo como adjuntos en un correo electrónico. Valida el email, sanitiza los nombres y adjunta los archivos.
+        </p>
+        <ul>
+          <li>Valida la dirección de correo electrónico.</li>
+          <li>Sanitiza la lista de segmentos.</li>
+          <li>Envía el correo mediante <code>MailService</code>.</li>
+        </ul>
+        
+        <h4><code>listSegments(String originalName)</code></h4>
+        <p>
+          Lista los nombres de los segmentos generados para un archivo en específico. Busca los archivos en la carpeta temporal, los filtra y los ordena.
+        </p>
+        <ul>
+          <li>Ordena los segmentos por número de parte.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+      <small>&copy; 2025 Billy Chile. Todos los derechos reservados.</small>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

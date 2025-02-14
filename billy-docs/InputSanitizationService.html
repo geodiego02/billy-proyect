@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InputSanitizationService</title>
+  <!-- Bootstrap 5 CSS desde CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+  <!-- Tu hoja de estilos personalizada -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">Billy Docs</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#docNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="docNav">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="index.html">Inicio</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="BillyProyectApplication.html">Aplicación Principal</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="WebSocketConfig.html">Configuración WebSocket</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="GlobalExceptionHandler.html">Manejo de Excepciones</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="FileSplitService.html">Servicio de Segmentación</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="MailService.html">Servicio de Correo</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="InputSanitizationService.html">Servicio Validación</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="FileController.html">Controlador de Archivos</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="WebController.html">Controlador de Vistas</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container mb-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-secondary text-white">
+        <h2 class="mb-0">InputSanitizationService</h2>
+      </div>
+      <div class="card-body">
+        <p>Servicio encargado de sanitizar las entradas para prevenir ataques y garantizar la seguridad en la manipulación de archivos y datos.</p>
+        
+        <h3>Métodos</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Método</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>sanitizeFilename(String filename)</code></td>
+              <td>Sanitiza el nombre del archivo eliminando caracteres peligrosos y limitando su longitud a 100 caracteres.</td>
+            </tr>
+            <tr>
+              <td><code>sanitizeSessionId(String sessionId)</code></td>
+              <td>Sanitiza el identificador de sesión permitiendo solo caracteres seguros (alfanuméricos y guiones).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Detalles de los Métodos</h3>
+
+        <h4><code>sanitizeFilename(String filename)</code></h4>
+        <p>
+          Este método toma un nombre de archivo y lo limpia eliminando separadores de ruta (como <code>/</code> y <code>\</code>), 
+          caracteres no permitidos y limita la longitud a 100 caracteres.
+        </p>
+        <ul>
+          <li>Elimina separadores de ruta.</li>
+          <li>Permite solo caracteres alfanuméricos, puntos, guiones y guiones bajos.</li>
+          <li>Limita la longitud a un máximo de 100 caracteres.</li>
+        </ul>
+
+        <h4><code>sanitizeSessionId(String sessionId)</code></h4>
+        <p>
+          Este método sanitiza el identificador de sesión, permitiendo únicamente caracteres alfanuméricos y guiones para evitar inyecciones o valores maliciosos.
+        </p>
+        <ul>
+          <li>Elimina cualquier carácter no permitido.</li>
+          <li>Previene la inyección de rutas u otros valores maliciosos.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+      <small>&copy; 2025 Billy Chile. Todos los derechos reservados.</small>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
