@@ -19,3 +19,8 @@
 .card-header {
     font-weight: bold;
 }
+
+.bg-medium-green {
+    background-color: #7bd17b !important;
+}
+

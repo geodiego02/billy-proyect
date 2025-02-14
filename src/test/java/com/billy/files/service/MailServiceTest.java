@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +36,22 @@ public class MailServiceTest {
         // Preparar mock para MimeMessage
         MimeMessage mimeMessage = org.mockito.Mockito.mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+        
+        // Antes de llamar a mailService.sendSegmentsByEmail(...)
+        File tempDir = new File(System.getProperty("java.io.tmpdir"), "splitFiles");
+        tempDir.mkdirs();
+        try {
+			new File(tempDir, "Form.pdf.0").createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        try {
+			new File(tempDir, "Form.pdf.1").createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         // Llamar al método y capturar el valor retornado
         String result = mailService.sendSegmentsByEmail("destino@ejemplo.com",

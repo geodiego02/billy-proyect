@@ -1,0 +1,26 @@
+/* styles.css */
+
+/* Oculta elementos con la clase .hidden */
+.hidden {
+    display: none;
+}
+
+/* Transición para la barra de progreso */
+#progressBar {
+    transition: width 0.3s ease;
+}
+
+/* Opcional: Personaliza el estilo de las cards */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.bg-medium-green {
+    background-color: #7bd17b !important;
+}
+
