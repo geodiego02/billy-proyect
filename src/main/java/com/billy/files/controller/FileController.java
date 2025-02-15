@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.billy.files.service.FileSplitService;
 import com.billy.files.service.InputSanitizationService;
 import com.billy.files.service.MailService;
+import com.billy.files.service.ValidationService;
 
 import jakarta.mail.MessagingException;
 
@@ -30,12 +31,13 @@ public class FileController {
 	private final FileSplitService fileSplitService;
     private final MailService mailService;
     private final InputSanitizationService inputSanitizationService;
-    private static final long MAX_FILE_SIZE = 1_073_741_824L;
+    private final ValidationService validationService;
     
-    public FileController(FileSplitService fileSplitService, MailService mailService, InputSanitizationService inputSanitizationService) {
+    public FileController(FileSplitService fileSplitService, MailService mailService, InputSanitizationService inputSanitizationService, ValidationService validationService) {
         this.fileSplitService = fileSplitService;
         this.mailService = mailService;
         this.inputSanitizationService = inputSanitizationService;
+        this.validationService = validationService;
     }
 
     @PostMapping("/upload")
@@ -44,45 +46,27 @@ public class FileController {
             @RequestParam("segmentSizeKB") int segmentSizeKB,
             @RequestParam("sessionId") String sessionId) throws IllegalStateException, IOException {
         
-        logger.info("Recibido upload de archivo: {} | Tamaño de segmento: {} KB | SessionId: {}", 
+        logger.info("Recibido upload de archivo: {} | Tamaño de segmento: {} KB | SessionId: {}",
                     file.getOriginalFilename(), segmentSizeKB, sessionId);
-
-        if (segmentSizeKB < 16 || segmentSizeKB > 1_048_576) {
-            logger.warn("Tamaño de segmento fuera de rango: {}", segmentSizeKB);
-            return "Error: El tamaño del segmento debe estar entre 16 KB y 1 GB.";
-        }
-        if (segmentSizeKB == 0) {
-            logger.warn("Tamaño de segmento es 0");
-            return "Error: El tamaño de segmento no puede ser 0.";
-        }
-        // Validación del tamaño del archivo para evitar sobrecarga en el servidor
-        if (file.getSize() > MAX_FILE_SIZE) {
-            logger.warn("El archivo excede el tamaño máximo permitido: {} bytes", file.getSize());
-            return "Error: El archivo excede el tamaño máximo permitido.";
-        }
-
-        File tempDir = new File(System.getProperty("java.io.tmpdir"), "splitFiles");
-        if (!tempDir.exists()) {
-            boolean created = tempDir.mkdirs();
-            if (created) {
-                logger.info("Directorio temporal creado: {}", tempDir.getAbsolutePath());
-            } else {
-                logger.error("No se pudo crear el directorio temporal: {}", tempDir.getAbsolutePath());
-                return "Error: No se pudo crear el directorio temporal.";
-            }
-        }
-
+        
+        // Validaciones centralizadas
+        validationService.validateSegmentSize(segmentSizeKB);
+        validationService.validateFileSize(file.getSize());
+        
+        // Asegurar la existencia del directorio temporal (incluye "splitFiles")
+        File tempDir = validationService.ensureTempDirectoryExists(System.getProperty("java.io.tmpdir") + "/splitFiles");
+        
         // Obtener y sanitizar el nombre del archivo original y el sessionId
         String originalFilename = file.getOriginalFilename();
         originalFilename = inputSanitizationService.sanitizeFilename(originalFilename);
         sessionId = inputSanitizationService.sanitizeSessionId(sessionId);
-
+        
         // Copia local con prefijo
         File localCopy = new File(tempDir, "copy_" + System.currentTimeMillis() + "_" + originalFilename);
         file.transferTo(localCopy);
         logger.debug("Archivo transferido a: {}", localCopy.getAbsolutePath());
-
-        // Llamar al servicio asíncrono pasando localCopy y originalFilename sanitizado
+        
+        // Llamar al servicio asíncrono para segmentar el archivo
         fileSplitService.splitFile(localCopy, originalFilename, segmentSizeKB, sessionId);
         return "Segmentación iniciada...";
     }
@@ -108,16 +92,8 @@ public class FileController {
     @PostMapping("/sendEmail")
     public String sendSegmentsByEmail(@RequestParam("toEmail") String toEmail,
                                       @RequestParam("segmentNames") List<String> segmentNames) throws MessagingException {
-    	logger.info("Solicitud de envío de email a: {}", toEmail);
-    	
-    	// Validar email
-    	String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
-    	if (!toEmail.matches(emailRegex)) {
-    		 logger.warn("Email inválido: {}", toEmail);
-    	    return "Error: Email inválido.";
-    	}
-        mailService.sendSegmentsByEmail(toEmail, segmentNames);
-        return "Segmentos enviados con éxito a " + toEmail;
+        logger.info("Solicitud de envío de email a: {}", toEmail);
+        return mailService.sendSegmentsByEmail(toEmail, segmentNames);
     }
     
     @GetMapping("/listSegments")

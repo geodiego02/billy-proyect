@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GlobalExceptionHandler</title>
+  <title>ValidationService</title>
   <!-- Bootstrap 5 CSS desde CDN -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-  <!-- Hoja de estilos personalizada -->
+  <!-- Tu hoja de estilos personalizada -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -22,30 +22,28 @@
           <li class="nav-item"><a class="nav-link" aria-current="page" href="index.html">Inicio</a></li>
           <li class="nav-item"><a class="nav-link" aria-current="page" href="BillyProyectApplication.html">Aplicación Principal</a></li>
           <li class="nav-item"><a class="nav-link" aria-current="page" href="WebSocketConfig.html">Configuración WebSocket</a></li>
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="GlobalExceptionHandler.html">Excepciones Global</a></li>
+          <li class="nav-item"><a class="nav-link" aria-current="page" href="GlobalExceptionHandler.html">Excepciones Global</a></li>
           <li class="nav-item"><a class="nav-link" aria-current="page" href="ErrorResponse.html">ErrorResponse</a></li>
           <li class="nav-item"><a class="nav-link" aria-current="page" href="FileSplitService.html">Servicio de Segmentación</a></li>
           <li class="nav-item"><a class="nav-link" aria-current="page" href="MailService.html">Servicio de Correo</a></li>
           <li class="nav-item"><a class="nav-link" aria-current="page" href="InputSanitizationService.html">Validar Input</a></li>
-          <li class="nav-item"><a class="nav-link" aria-current="page" href="ValidationService.html">Servicio de Validación</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="ValidationService.html">Servicio de Validación</a></li>
           <li class="nav-item"><a class="nav-link" aria-current="page" href="FileController.html">Controlador de Archivos</a></li>
           <li class="nav-item"><a class="nav-link" aria-current="page" href="WebController.html">Controlador de Vistas</a></li>
         </ul>
       </div>
     </div>
   </nav>
-  
+
   <!-- Contenido principal -->
   <div class="container mb-5">
     <div class="card shadow-sm">
       <div class="card-header bg-secondary text-white">
-        <h2>GlobalExceptionHandler</h2>
+        <h2 class="mb-0">ValidationService</h2>
       </div>
       <div class="card-body">
-        <p>
-          Clase que gestiona de forma centralizada las excepciones de la aplicación, proporcionando respuestas estandarizadas y seguras.
-        </p>
-
+        <p>Servicio encargado de validar parámetros y asegurar la existencia del directorio temporal en la aplicación.</p>
+        
         <h3>Métodos</h3>
         <table class="table table-bordered">
           <thead>
@@ -56,65 +54,50 @@
           </thead>
           <tbody>
             <tr>
-              <td><code>handleIOException(IOException ex)</code></td>
-              <td>Maneja errores de entrada/salida (I/O) y devuelve un mensaje genérico.</td>
+              <td><code>validateSegmentSize(int segmentSizeKB)</code></td>
+              <td>Valida que el tamaño del segmento esté entre 16 KB y 1 GB.</td>
             </tr>
             <tr>
-              <td><code>handleMailExceptions(Exception ex)</code></td>
-              <td>Maneja errores relacionados con el envío de correos (tanto <code>MessagingException</code> como <code>MailSendException</code>) devolviendo un mensaje genérico.</td>
+              <td><code>validateFileSize(long fileSize)</code></td>
+              <td>Valida que el tamaño del archivo no exceda 1 GB.</td>
             </tr>
             <tr>
-              <td><code>handleMissingServletRequestPartException(MissingServletRequestPartException ex)</code></td>
-              <td>Maneja errores cuando falta una parte requerida en la solicitud, devolviendo un estado 400.</td>
-            </tr>
-            <tr>
-              <td><code>handleIllegalArgumentException(IllegalArgumentException ex)</code></td>
-              <td>Maneja errores de argumentos inválidos y devuelve un mensaje personalizado.</td>
-            </tr>
-            <tr>
-              <td><code>handleGeneralException(Exception ex)</code></td>
-              <td>Maneja cualquier otra excepción inesperada devolviendo un mensaje genérico.</td>
+              <td><code>ensureTempDirectoryExists(String dirPath)</code></td>
+              <td>Asegura que el directorio temporal exista, creándolo de forma segura en entornos multihilo.</td>
             </tr>
           </tbody>
         </table>
-
+        
         <h3>Detalles de los Métodos</h3>
-
-        <h4><code>handleIOException(IOException ex)</code></h4>
+        
+        <h4><code>validateSegmentSize(int segmentSizeKB)</code></h4>
         <p>
-          Registra el error de I/O y devuelve una respuesta con estado <code>500 Internal Server Error</code> junto con un mensaje genérico para el usuario.
+          Verifica que el tamaño del segmento esté dentro de los límites permitidos. Si el tamaño es inferior a 16 KB o superior a 1 GB, 
+          o es igual a 0, lanza una <code>IllegalArgumentException</code> con un mensaje descriptivo.
         </p>
-
-        <h4><code>handleMailExceptions(Exception ex)</code></h4>
+        
+        <h4><code>validateFileSize(long fileSize)</code></h4>
         <p>
-          Captura tanto <code>MessagingException</code> como <code>MailSendException</code>, registra el error en detalle y devuelve una respuesta con estado <code>500</code> con un mensaje genérico que no expone detalles técnicos.
+          Comprueba que el tamaño del archivo no supere 1 GB. Si el archivo excede este límite, lanza una <code>IllegalArgumentException</code> 
+          indicando que el archivo es demasiado grande.
         </p>
-
-        <h4><code>handleMissingServletRequestPartException(MissingServletRequestPartException ex)</code></h4>
+        
+        <h4><code>ensureTempDirectoryExists(String dirPath)</code></h4>
         <p>
-          Captura cuando falta una parte requerida en la solicitud multipart y devuelve una respuesta con estado <code>400 Bad Request</code>.
-        </p>
-
-        <h4><code>handleIllegalArgumentException(IllegalArgumentException ex)</code></h4>
-        <p>
-          Registra y maneja errores de argumentos inválidos, devolviendo una respuesta con estado <code>400</code> y el mensaje del error.
-        </p>
-
-        <h4><code>handleGeneralException(Exception ex)</code></h4>
-        <p>
-          Captura cualquier otra excepción no prevista, registrándola y devolviendo una respuesta genérica con estado <code>500</code>.
+          Verifica si el directorio especificado existe. Si no existe, lo crea de forma segura utilizando sincronización para entornos multihilo.
+          Retorna el objeto <code>File</code> que representa el directorio.
         </p>
       </div>
     </div>
   </div>
-  
+
   <!-- Footer -->
   <footer class="bg-dark text-white text-center py-3 mt-5">
     <div class="container">
       <small>&copy; 2025 Billy Chile. Todos los derechos reservados.</small>
     </div>
   </footer>
-  
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

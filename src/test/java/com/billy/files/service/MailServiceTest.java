@@ -13,15 +13,19 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 public class MailServiceTest {
-
 	@Mock
     private JavaMailSender mailSender;
+
+    // * NUEVO: Usamos @Spy para InputSanitizationService
+    @Spy
+    private InputSanitizationService inputSanitizationService = new InputSanitizationService();
 
     @InjectMocks
     private MailService mailService;
@@ -32,34 +36,20 @@ public class MailServiceTest {
     }
 
     @Test
-    void testSendSegmentsByEmail() throws MessagingException {
-        // Preparar mock para MimeMessage
+    void testSendSegmentsByEmail() throws MessagingException, IOException {
         MimeMessage mimeMessage = org.mockito.Mockito.mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
         
-        // Antes de llamar a mailService.sendSegmentsByEmail(...)
+        // Preparar directorio y archivos para simular segmentos
         File tempDir = new File(System.getProperty("java.io.tmpdir"), "splitFiles");
         tempDir.mkdirs();
-        try {
-			new File(tempDir, "Form.pdf.0").createNewFile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        try {
-			new File(tempDir, "Form.pdf.1").createNewFile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        new File(tempDir, "Form.pdf.0").createNewFile();
+        new File(tempDir, "Form.pdf.1").createNewFile();
 
-        // Llamar al método y capturar el valor retornado
         String result = mailService.sendSegmentsByEmail("destino@ejemplo.com",
                 Arrays.asList("Form.pdf.0", "Form.pdf.1"));
 
-        // Verificar que se invoque mailSender.send(mimeMessage)
         verify(mailSender).send(mimeMessage);
-        // Verificar el mensaje retornado
         assertEquals("Segmentos enviados con éxito a destino@ejemplo.com", result);
     }
 }

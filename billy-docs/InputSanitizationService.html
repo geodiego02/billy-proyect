@@ -22,10 +22,12 @@
             <li class="nav-item"><a class="nav-link" aria-current="page" href="index.html">Inicio</a></li>
             <li class="nav-item"><a class="nav-link" aria-current="page" href="BillyProyectApplication.html">Aplicación Principal</a></li>
             <li class="nav-item"><a class="nav-link" aria-current="page" href="WebSocketConfig.html">Configuración WebSocket</a></li>
-            <li class="nav-item"><a class="nav-link" aria-current="page" href="GlobalExceptionHandler.html">Manejo de Excepciones</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="GlobalExceptionHandler.html">Excepciones Global</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="ErrorResponse.html">ErrorResponse</a></li>
             <li class="nav-item"><a class="nav-link" aria-current="page" href="FileSplitService.html">Servicio de Segmentación</a></li>
             <li class="nav-item"><a class="nav-link" aria-current="page" href="MailService.html">Servicio de Correo</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="InputSanitizationService.html">Servicio Validación</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="InputSanitizationService.html">Validar Input</a></li>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="ValidationService.html">Servicio de Validación</a></li>
             <li class="nav-item"><a class="nav-link" aria-current="page" href="FileController.html">Controlador de Archivos</a></li>
             <li class="nav-item"><a class="nav-link" aria-current="page" href="WebController.html">Controlador de Vistas</a></li>
         </ul>
@@ -53,11 +55,15 @@
           <tbody>
             <tr>
               <td><code>sanitizeFilename(String filename)</code></td>
-              <td>Sanitiza el nombre del archivo eliminando caracteres peligrosos y limitando su longitud a 100 caracteres.</td>
+              <td>Sanitiza el nombre del archivo eliminando separadores y caracteres no permitidos, limitándolo a 100 caracteres.</td>
             </tr>
             <tr>
               <td><code>sanitizeSessionId(String sessionId)</code></td>
-              <td>Sanitiza el identificador de sesión permitiendo solo caracteres seguros (alfanuméricos y guiones).</td>
+              <td>Sanitiza el identificador de sesión permitiendo solo caracteres alfanuméricos y guiones.</td>
+            </tr>
+            <tr>
+              <td><code>sanitizeSegmentNames(List&lt;String&gt; segmentNames)</code></td>
+              <td>Filtra y sanitiza una lista de nombres de segmentos, eliminando entradas nulas o vacías y removiendo separadores de ruta.</td>
             </tr>
           </tbody>
         </table>
@@ -77,11 +83,21 @@
 
         <h4><code>sanitizeSessionId(String sessionId)</code></h4>
         <p>
-          Este método sanitiza el identificador de sesión, permitiendo únicamente caracteres alfanuméricos y guiones para evitar inyecciones o valores maliciosos.
+          Sanitiza el identificador de sesión, permitiendo únicamente caracteres alfanuméricos y guiones para evitar inyecciones o valores maliciosos.
         </p>
         <ul>
           <li>Elimina cualquier carácter no permitido.</li>
           <li>Previene la inyección de rutas u otros valores maliciosos.</li>
+        </ul>
+
+        <h4><code>sanitizeSegmentNames(List&lt;String&gt; segmentNames)</code></h4>
+        <p>
+          Procesa una lista de nombres de segmentos, filtrando aquellos que son nulos o están vacíos y eliminando separadores de ruta de cada nombre.
+        </p>
+        <ul>
+          <li>Filtra nombres nulos o vacíos.</li>
+          <li>Elimina separadores de ruta como <code>/</code> y <code>\</code> en cada nombre.</li>
+          <li>Devuelve la lista de nombres sanitizados.</li>
         </ul>
       </div>
     </div>

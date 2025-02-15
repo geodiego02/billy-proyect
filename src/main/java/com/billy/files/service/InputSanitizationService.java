@@ -1,5 +1,8 @@
 package com.billy.files.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,5 +26,12 @@ public class InputSanitizationService {
         }
         // Permite solo caracteres alfanuméricos y guiones
         return sessionId.replaceAll("[^a-zA-Z0-9-]", "");
+    }
+    
+    public List<String> sanitizeSegmentNames(List<String> segmentNames) {
+        return segmentNames.stream()
+                .filter(s -> s != null && !s.trim().isEmpty())
+                .map(s -> s.replaceAll("[\\\\/]+", ""))
+                .collect(Collectors.toList());
     }
 }

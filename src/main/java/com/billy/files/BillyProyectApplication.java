@@ -24,9 +24,9 @@ public class BillyProyectApplication {
         if (!logDir.exists()) {
             boolean created = logDir.mkdirs();
             if (created) {
-                System.out.println("Carpeta 'logs' creada exitosamente.");
+            	logger.info("Carpeta 'logs' creada exitosamente.");
             } else {
-                System.err.println("No se pudo crear la carpeta 'logs'.");
+            	logger.error("No se pudo crear la carpeta 'logs'."); 
             }
         }
     }
